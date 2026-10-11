@@ -1,5 +1,11 @@
 # Growing Neural Cellular Automata
 
+| | |
+|---|---|
+| **Stack** | Python, PyTorch, NumPy, Pillow, Matplotlib |
+| **Type** | Deep learning, reimplementation of a published paper |
+| **Output** | [`growth.png`](growth.png), [`regen.png`](regen.png), [`nca_demo.gif`](nca_demo.gif) |
+
 A tiny neural network that learns a *local update rule*: apply it to every
 pixel of a grid, over and over, and a target image grows itself from a
 single seed pixel — and if you damage it mid-growth, it heals.
@@ -7,7 +13,7 @@ single seed pixel — and if you damage it mid-growth, it heals.
 Based on: Mordvintsev, Randazzo, Niklasson, Levin, "Growing Neural Cellular
 Automata", Distill, 2020. https://distill.pub/2020/growing-ca/
 
-## Why this is a good deep learning course project
+## Why this project
 
 - It's a real, published architecture with a clear story (perception →
   learned update → stochastic async application → life masking) — every
@@ -16,6 +22,15 @@ Automata", Distill, 2020. https://distill.pub/2020/growing-ca/
 - The demo is genuinely impressive live: grow it, then damage it in front
   of the audience and watch it heal in real time.
 - It has an obvious, satisfying growth path after the course (see below).
+
+## Run
+
+```bash
+pip install -r requirements.txt
+python make_target.py          # draw the target image
+python train.py 1000           # train; writes nca_weights.pt and loss_log.npy
+python visualize.py           # writes growth.png, regen.png, nca_demo.gif
+```
 
 ## Files
 
@@ -26,7 +41,7 @@ Automata", Distill, 2020. https://distill.pub/2020/growing-ca/
 | `train.py` | Training loop: sample pool + damage, which is what makes regeneration emerge |
 | `visualize.py` | Produces `growth.png` (growth filmstrip) and `regen.png` (damage → heal filmstrip) |
 
-## How it actually works (for your slides)
+## How it works
 
 1. **State**: every cell is a 16-number vector. Channels 0-3 are RGBA
    (visible). Channels 4-15 are hidden — the cell's private "memory," which
@@ -54,11 +69,10 @@ Automata", Distill, 2020. https://distill.pub/2020/growing-ca/
    thousands of times.
 
 Regeneration is never explicitly rewarded — it falls out of the training
-distribution containing damaged states. That's the single most important
-thing to say in your presentation: **the model isn't told to heal, it's
+distribution containing damaged states. The key point: **the model isn't told to heal, it's
 just never allowed to see "damaged" as an excuse for high loss.**
 
-## Extending it after your presentation
+## Possible extensions
 
 1. **Localize damage response** — visualize the hidden channels directly
    (they're not RGB, but you can PCA them down to 3 channels and render
